@@ -36,7 +36,7 @@ class MainController extends AbstractController
      */
     public function edit(): Response
     {
-        $tokens = [];
+        $tokens = array();
         $msg = "<h1>My Post</h1><ul><li>Apple</li><li>Banana</li><li>Orange</li></ul>";
         preg_match_all('/<[^>]++>|[^<>\s]++/', $msg, $tokens);
         return $this->render('main/edit.html.twig', [
