@@ -1,0 +1,25 @@
+{
+    "time" : "",
+    "blocks" : [
+        {
+            "id" : "We04IDlBJw",
+            "type" : "list",
+            "data" : {
+                "style" : "unordered",
+                "items" : [
+                    "It is a block-styled editor",
+                    "It returns clean data output in JSON",
+                    "Designed to be extendable and pluggable with a simple API"
+                ]
+            }
+        },
+        {
+            "id" : "4sA6XvXQIg",
+            "type" : "paragraph",
+            "data" : {
+                "text" : "Workspace in classic editors is made of a single contenteditable element, used to create different HTML markups. Editor.js <mark class=\"cdx-marker\">workspace consists of separate Blocks: paragraphs, headings, images, lists, quotes, etc</mark>. Each of them is an independent contenteditable element (or more complex structure) provided by Plugin and united by Editor's Core."
+            }
+        }
+    ],
+    "version" : "2.22.2"
+}

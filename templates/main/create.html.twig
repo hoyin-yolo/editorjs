@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  
+    <!-- CSS Boostrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <!-- EditorJS ADN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/checklist@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/quote@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/code@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/table@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/embed@latest"></script>
+</head>
+<body>
+
+<div id="display"></div>
+<p>--------------------------------------------------------------------</p>
+<div id="editor"></div>
+<button id="post_to_blog">Save</button>
+
+
+<script>
+// constructor for the blog
+const editor = new EditorJS({
+
+    holder: 'editor',
+   
+    tools: {
+        header: Header,        
+        list: List,        
+        checklist: Checklist,
+        quote: Quote,
+        code: CodeTool,
+        table: Table,
+
+        embed: {
+            class: Embed,
+            inlineToolbar: true,
+            config: {
+                services: {
+                    youtube: true,
+                    coub: true
+                }
+            }
+        }
+    }
+
+});
+
+
+// local variable for saving blog data
+var posts = [];
+
+// save the new post
+let saveBtn = document.getElementById('post_to_blog');
+saveBtn.addEventListener('click', function() {
+    editor.save().then((outputData) => {
+        console.log(JSON.stringify(outputData));
+
+        // initialize variable
+        var blogdata = '';
+
+        // may be moving to load function
+        // get and save time
+        console.log(convertToDateTimeFormat(outputData.time));
+
+        // get [blocks] data prepared to for loop function
+        var getBlocks = outputData.blocks;
+        
+        // convert to html code           
+        convertToHtml =  convertDataToHtml(getBlocks);
+        console.log(convertToHtml);
+        blogdata += convertToHtml;
+        
+        // save to local variable
+        posts.push(blogdata);
+
+
+        // may be moving to load function
+        // create div element to display
+        const addpost = document.createElement('div');
+        addpost.innerHTML = blogdata;
+        document.getElementById('display').appendChild(addpost);
+        
+            
+        }).catch((error) => {
+            console.log('Failed: ', error)
+        });
+        
+});
+
+
+function convertDataToHtml(blocks) {
+    var convertedHtml = "";
+    blocks.map(block => {
+        
+        switch (block.type) {
+          case "header":
+            convertedHtml += `<h${block.data.level}>${block.data.text}</h${block.data.level}>`;
+            break;
+          case "embed":
+            convertedHtml += `<div><iframe width="560" height="315" src="${block.data.embed}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            convertedHtml += `<p>${block.data.caption}</p></div>`;
+            break;
+          case "paragraph":
+            convertedHtml += `<p>${block.data.text}</p>`;
+            break;
+          case "delimiter":
+            convertedHtml += "<hr />";
+            break;
+          case "image":
+            convertedHtml += `<img class="img-fluid" src="${block.data.file.url}" title="${block.data.caption}" /><br /><em>${block.data.caption}</em>`;
+            break;
+          case "list":
+            convertedHtml += "<ul>";
+            block.data.items.forEach(function(li) {
+              convertedHtml += `<li>${li}</li>`;
+            });
+            convertedHtml += "</ul>";
+            break;
+          case "checklist":
+            convertedHtml += "<ul>";
+            block.data.items.forEach(function(li) {
+              if (li["checked"] == true) {
+                convertedHtml += `<ol>&#10003; ${li["text"]}</ol>`;
+              } else {
+                convertedHtml += `<ol>&nbsp;&nbsp;&nbsp; ${li["text"]}</ol>`;
+              }
+            });
+            convertedHtml += "</ul>";
+            break;
+          case "table":
+            convertedHtml += "<table class='table table-striped table-hover'>";
+            block.data.content.forEach(function(tdata) {
+              convertedHtml += "<tr>";
+              for (a = 0; a < tdata.length; a++) {
+                convertedHtml += "<td>" + tdata[a] + "</td>";
+              }
+              
+              convertedHtml += "</tr>";
+            });
+            convertedHtml += "</table>";
+            break;
+
+          case "code":
+            convertedHtml += `<code>${block.data.code}</code>`;
+
+
+
+          default:
+            console.log("Unknown block type", block.type);
+            break;
+        }
+    });
+    return convertedHtml;
+}
+
+
+function convertToDateTimeFormat(datetime) {
+    var convertedDate = new Date(datetime); 
+    var conversion =  convertedDate.getHours() + ":"  
+                + convertedDate.getMinutes() + ":" 
+                + convertedDate.getSeconds() + " "
+                + convertedDate.getDate() + "/"
+                + (convertedDate.getMonth()+1)  + "/" 
+                + convertedDate.getFullYear();
+
+    return conversion;
+}
+
+
+
+</script>
+</body>
+</html>
