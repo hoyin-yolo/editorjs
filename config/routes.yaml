@@ -1,3 +1,5 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+index:
+    path: json/create/
+    controller: App\Controller\JSONController::create
+
+

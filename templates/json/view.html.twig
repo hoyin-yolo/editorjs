@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+<div>
+{% for message in app.flashes('notice') %}
+            <div class="alert alert-success">
+                {{message}}
+            </div>
+        {% endfor %}
+
+</div>
+<h1>XXX企業ブログ</h1>
+<a href="create">新規作成</a>
+<div id="allposts"></div>
+<div hidden id="json_data"></div>
+
+
+
+
+<script>
+{% for p in posts %}
+
+document.getElementById('json_data').innerHTML = "{{p.content}}";
+var post = document.getElementById("json_data");
+var text = JSON.parse(post.innerHTML);
+loadingPosts({{p.id}}, text);
+
+{% endfor %}
+
+
+
+
+// start conversion
+function loadingPosts(id, body) {
+    
+    
+
+    // create a div for a post
+    const addpost = document.createElement('div');
+
+    // editButton
+    const editButton = document.createElement('button');
+    editButton.setAttribute('id', 'editBtn_' + id);
+    editButton.setAttribute('type', 'button');
+    editButton.innerHTML = 'edit';
+    addpost.appendChild(editButton);
+
+    // deleteButton
+    const deleteButton = document.createElement('button');
+    deleteButton.setAttribute('id', 'deleteBtn_' + id);
+    deleteButton.setAttribute('type', 'button');
+    deleteButton.innerHTML = 'delete';
+    addpost.appendChild(deleteButton);
+
+
+    // get time
+    var stime = getTime(body.time);
+    addpost.innerHTML +=
+    "<span class='inserted_time'>"+stime+"</span>";
+
+    //  get post data
+    var getBlocks = body['blocks'];
+    var msg = convertDataToHtml(getBlocks);
+    console.log(msg);
+    
+    // get post
+    addpost.innerHTML += msg;
+    addpost.style.cssText = 'border: 1px solid; padding: 10px';
+    document.getElementById('allposts').appendChild(addpost);
+
+    // Add event listener at least
+    document.getElementById('editBtn_' + id).onclick = function () {
+        location.href = "/json/edit/" + id;
+    };
+
+
+    document.getElementById('deleteBtn_' + id).onclick = function () {
+        if (confirm("Press a button!") == true) {
+            location.href = "/json/delete/" + id;
+        } else {
+            
+        }
+    
+    };
+
+
+
+    
+
+}
+
+function htmlspecialchars(str){
+  return (str + '').replace(/&/g,'&amp;')
+                   .replace(/"/g,'&quot;')
+                   .replace(/'/g,'&#039;')
+                   .replace(/</g,'&lt;')
+                   .replace(/>/g,'&gt;'); 
+}
+
+function convertDataToHtml(blocks) {
+    var convertedHtml = "";
+    blocks.map(block => {
+        
+        switch (block.type) {
+          case "header":
+            convertedHtml += `<h${block.data.level}>${block.data.text}</h${block.data.level}>`;
+            break;
+          case "embed":
+            convertedHtml += `<div><iframe width="560" height="315" src="${block.data.embed}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            convertedHtml += `<p>${block.data.caption}</p></div>`;
+            break;
+          case "paragraph":
+            convertedHtml += `<p>${block.data.text}</p>`;
+            break;
+          case "delimiter":
+            convertedHtml += "<hr />";
+            break;
+          case "image":
+            convertedHtml += `<img class="img-fluid" src="${block.data.file.url}" title="${block.data.caption}" /><br /><em>${block.data.caption}</em>`;
+            break;
+          case "list":
+            convertedHtml += "<ul>";
+            block.data.items.forEach(function(li) {
+              convertedHtml += `<li>${li}</li>`;
+            });
+            convertedHtml += "</ul>";
+            break;
+          case "checklist":
+            convertedHtml += "<ul>";
+            block.data.items.forEach(function(li) {
+              if (li["checked"] == true) {
+                convertedHtml += `<ol>&#10003; ${li["text"]}</ol>`;
+              } else {
+                convertedHtml += `<ol>&nbsp;&nbsp;&nbsp; ${li["text"]}</ol>`;
+              }
+            });
+            convertedHtml += "</ul>";
+            break;
+          case "table":
+            convertedHtml += "<table class='table table-striped table-hover'>";
+            block.data.content.forEach(function(tdata) {
+              convertedHtml += "<tr>";
+              for (a = 0; a < tdata.length; a++) {
+                convertedHtml += "<td>" + tdata[a] + "</td>";
+              }
+              
+              convertedHtml += "</tr>";
+            });
+            convertedHtml += "</table>";
+            break;
+
+          case "code":
+            convertedHtml += `<code>${block.data.code}</code>`;
+
+
+
+          default:
+            console.log("Unknown block type", block.type);
+            break;
+        }
+    });
+    return convertedHtml;
+}
+
+// get time
+function getTime(datetime) {
+    var convertedDate = new Date(datetime); 
+    var conversion =  convertedDate.getHours() + ":"  
+                + convertedDate.getMinutes() + ":" 
+                + convertedDate.getSeconds() + " "
+                + convertedDate.getDate() + "/"
+                + (convertedDate.getMonth()+1)  + "/" 
+                + convertedDate.getFullYear();
+
+    return conversion;
+}
+
+</script>
+</body>
+</html>

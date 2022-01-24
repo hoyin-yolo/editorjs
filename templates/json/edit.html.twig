@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- editorjs adn -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/checklist@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/quote@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/code@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/table@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/embed@latest"></script>
+
+</head>
+
+<body>
+
+<a href="/json/view">Back to Blog</a>
+<div id="editor" style="border: 1px dotted"></div>
+<div hidden id="getPost">{{post.content}}</div>
+<button type="submit">Update</button>
+<script>
+
+var post = document.getElementById("getPost");
+var text = JSON.parse(post.innerHTML);
+
+const editor = new EditorJS({
+
+    holder: 'editor',
+   
+    tools: {
+        header: Header,        
+        list: List,        
+        checklist: Checklist,
+        quote: Quote,
+        code: CodeTool,
+        table: Table,
+
+        embed: {
+            class: Embed,
+            inlineToolbar: true,
+            config: {
+                services: {
+                    youtube: true,
+                    coub: true
+                }
+            }
+        }
+    },
+    data: text
+});
+
+
+
+</script>
+
+</body>
+</html>

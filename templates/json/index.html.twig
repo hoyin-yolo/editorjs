@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- style file -->
+    <!-- CSS only -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <!-- editorjs adn -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/checklist@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/quote@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/code@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/table@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/embed@latest"></script>
+
+  <!-- CSS --> 
+   <style>
+    body {
+      margin: auto;
+      max-width: 900px;
+    }
+    #editor {
+  
+        border: 1px solid;
+    }
+    .inserted_time {
+        font-style: italic;
+        font-size: 8px;
+        text-align: right;
+    }
+
+   </style>
+</head>
+
+<body>
+<h2>ブログ</h2>
+<a href="create">新規作成</a>
+
+
+<div id="display">
+  <div id="allblogs"></div>
+</div>
+
+
+<script>
+
+
+
+// saved posts
+const blogs = [{"time":1641955404060,"blocks":[{"id":"t_39IX2iIH","type":"header","data":{"text":"First Blog Post","level":2}},{"id":"jBunZLMaJC","type":"paragraph","data":{"text":"gogogo"}}],"version":"2.22.2"},{"time":1641955680472,"blocks":[{"id":"fbfQo5o1_y","type":"list","data":{"style":"ordered","items":["ABC","DEF","HIJ"]}}],"version":"2.22.2"},{"time":1641955749893,"blocks":[{"id":"idQrTDXnzJ","type":"checklist","data":{"items":[{"text":"English","checked":true},{"text":"French","checked":false},{"text":"German","checked":false}]}}],"version":"2.22.2"},{"time":1641957539439,"blocks":[{"id":"ztUBHu3HHg","type":"table","data":{"withHeadings":false,"content":[["Category","Language"],["1","Java"],["2","Python"]]}}],"version":"2.22.2"},{"time":1641959106166,"blocks":[{"id":"Q6Z-TKWLup","type":"embed","data":{"service":"youtube","source":"https://youtu.be/tbXpX4dAqjg","embed":"https://www.youtube.com/embed/tbXpX4dAqjg","width":580,"height":320,"caption":"This is a tutorial for learning PHP Symfony framework."}}],"version":"2.22.2"}]
+
+
+// retrieve posts when loading the page
+console.log(blogs.length);
+loadingPosts();
+console.log('retrieved!')
+
+
+
+
+// constructor for the blog
+// skip...
+
+
+// saving the new post
+// skip...
+
+
+function loadingPosts() {
+  
+  for(var i = 0; i < blogs.length; i++) {
+            
+            var getTime = blogs[i]['time'];
+            var getBlocks = blogs[i]['blocks'];
+            console.log(getTime);
+         
+
+            for(var y = 0; y < getBlocks.length; y++) {
+                console.log('printing text.......');
+                console.log(getBlocks[y]);
+                var msg = convertDataToHtml(getBlocks);
+                //console.log(msg);
+            }
+
+            // create a div for a post
+            const addblog = document.createElement('div');
+            document.getElementById('allblogs').appendChild(addblog);
+
+            // deleteButton
+            const deleteButton = document.createElement('button');
+            deleteButton.setAttribute('id', 'deleteBtn_' + i);
+            deleteButton.setAttribute('type', 'button');
+            deleteButton.innerHTML = 'delete';
+            addblog.appendChild(deleteButton);
+
+            // get time
+            addblog.innerHTML +=
+              "<p class='inserted_time'>"+ convertToDateTimeFormat(getTime) + "</p>";
+            // get post
+            addblog.innerHTML += msg;
+            addblog.style.cssText = 'border: 1px solid; padding: 10px';
+            
+
+            // Add event listener at least
+            document
+              .getElementById('deleteBtn_' + i)
+              .addEventListener('click', function (evt) {
+                evt.preventDefault();
+                const chosen_post = deleteButton.closest('div');
+                allblogs.removeChild(chosen_post);
+              });
+
+            
+
+            msg = '';
+ 
+        }
+
+        
+
+}
+
+function convertDataToHtml(blocks) {
+    var convertedHtml = "";
+    blocks.map(block => {
+        
+        switch (block.type) {
+          case "header":
+            convertedHtml += `<h${block.data.level}>${block.data.text}</h${block.data.level}>`;
+            break;
+          case "embed":
+            convertedHtml += `<div><iframe width="560" height="315" src="${block.data.embed}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            convertedHtml += `<p>${block.data.caption}</p></div>`;
+            break;
+          case "paragraph":
+            convertedHtml += `<p>${block.data.text}</p>`;
+            break;
+          case "delimiter":
+            convertedHtml += "<hr />";
+            break;
+          case "image":
+            convertedHtml += `<img class="img-fluid" src="${block.data.file.url}" title="${block.data.caption}" /><br /><em>${block.data.caption}</em>`;
+            break;
+          case "list":
+            convertedHtml += "<ul>";
+            block.data.items.forEach(function(li) {
+              convertedHtml += `<li>${li}</li>`;
+            });
+            convertedHtml += "</ul>";
+            break;
+          case "checklist":
+            convertedHtml += "<ul>";
+            block.data.items.forEach(function(li) {
+              if (li["checked"] == true) {
+                convertedHtml += `<ol>&#10003; ${li["text"]}</ol>`;
+              } else {
+                convertedHtml += `<ol>&nbsp;&nbsp;&nbsp; ${li["text"]}</ol>`;
+              }
+            });
+            convertedHtml += "</ul>";
+            break;
+          case "table":
+            convertedHtml += "<table class='table table-striped table-hover'>";
+            block.data.content.forEach(function(tdata) {
+              convertedHtml += "<tr>";
+              for (a = 0; a < tdata.length; a++) {
+                convertedHtml += "<td>" + tdata[a] + "</td>";
+              }
+              
+              convertedHtml += "</tr>";
+            });
+            convertedHtml += "</table>";
+            break;
+
+          case "code":
+            convertedHtml += `<code>${block.data.code}</code>`;
+
+
+
+          default:
+            console.log("Unknown block type", block.type);
+            break;
+        }
+    });
+    return convertedHtml;
+}
+
+function convertToDateTimeFormat(datetime) {
+    var convertedDate = new Date(datetime); 
+    var conversion =  convertedDate.getHours() + ":"  
+                + convertedDate.getMinutes() + ":" 
+                + convertedDate.getSeconds() + " "
+                + convertedDate.getDate() + "/"
+                + (convertedDate.getMonth()+1)  + "/" 
+                + convertedDate.getFullYear();
+
+    return conversion;
+}
+
+</script>
+</body>
+</html>
