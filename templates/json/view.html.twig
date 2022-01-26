@@ -28,6 +28,7 @@
 document.getElementById('json_data').innerHTML = "{{p.content}}";
 var post = document.getElementById("json_data");
 var text = JSON.parse(post.innerHTML);
+
 loadingPosts({{p.id}}, text);
 
 {% endfor %}
@@ -94,14 +95,6 @@ function loadingPosts(id, body) {
 
 }
 
-function htmlspecialchars(str){
-  return (str + '').replace(/&/g,'&amp;')
-                   .replace(/"/g,'&quot;')
-                   .replace(/'/g,'&#039;')
-                   .replace(/</g,'&lt;')
-                   .replace(/>/g,'&gt;'); 
-}
-
 function convertDataToHtml(blocks) {
     var convertedHtml = "";
     blocks.map(block => {
@@ -124,11 +117,19 @@ function convertDataToHtml(blocks) {
             convertedHtml += `<img class="img-fluid" src="${block.data.file.url}" title="${block.data.caption}" /><br /><em>${block.data.caption}</em>`;
             break;
           case "list":
-            convertedHtml += "<ul>";
-            block.data.items.forEach(function(li) {
-              convertedHtml += `<li>${li}</li>`;
-            });
-            convertedHtml += "</ul>";
+            if (block.data.style == "unordered") {
+              convertedHtml += "<ul>";
+              block.data.items.forEach(function(li) {
+                convertedHtml += `<li>${li}</li>`;
+              });
+              convertedHtml += "</ul>";
+            } else {
+              convertedHtml += "<ol>";
+              block.data.items.forEach(function(li) {
+                convertedHtml += `<li>${li}</li>`;
+              });
+              convertedHtml += "</ol>";
+            }               
             break;
           case "checklist":
             convertedHtml += "<ul>";

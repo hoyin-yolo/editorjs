@@ -2,8 +2,12 @@
 
 namespace App\Controller;
 
+
+use App\Entity\Person;
+use App\Form\PersonType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class MainController extends AbstractController
@@ -11,13 +15,39 @@ class MainController extends AbstractController
     /**
      * @Route("/", name="main")
      */
-    public function index(): Response
+    public function personform(Request $request): Response
+
     {
-        $msg = ['<h1>My Post</h1><ul><li>Apple</li><li>Banana</li><li>Orange</li></ul>', '<h5>Nobushoten</h5>', '<iframe width="560" height="315" src="https://www.youtube.com/embed/OK_JCtrrv-c" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe><p>This is PHP tutorial</p>'];
-        return $this->render('main/index.html.twig', [
-            "msg" => $msg,
+
+
+        return $this->render('main/form.html.twig', [
+            
         ]);
     }
+
+    /**
+     * @Route("/save", name="mainsave")
+     */
+    public function saveForm(Request $request, $data): Response
+
+    {
+        $post = new Person();
+        $form = $this->createForm(PersonType::class, $post);
+        $form->handleRequest($request);
+        
+        if($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($post);
+            $em->flush();
+
+            $this->addFlash('notice', 'Submitted Successfully');
+        }
+
+        return $this->render('main/person.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
 
 
     /**

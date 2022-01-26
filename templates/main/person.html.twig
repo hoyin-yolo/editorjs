@@ -1,0 +1,19 @@
+<html>
+
+<head>
+</head>
+
+<body>
+
+{% for message in app.flashes('notice') %}
+            <div class="alert alert-success">
+                {{message}}
+            </div>
+        {% endfor %}
+{{form_start(form)}}
+{{form(form)}}
+{{form_end(form)}}
+
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+<form>
+    <input type="text" id="input1"></input>
+    <input type="text" id="input2"></input>
+    <button onclick="doCon()">Submit</button>
+</form>
+
+<script>
+function doCon() {
+    var x = document.getElementById('input2').value;
+    document.getElementById('input1').setAttribute("value", x);;
+    console.log("printing..." + x);
+
+
+    var y = document.getElementById('input1').value;
+    console.log("1: " + y);
+}
+
+</script>

@@ -19,9 +19,30 @@
 <body>
 
 <a href="/json/view">Back to Blog</a>
-<div id="editor" style="border: 1px dotted"></div>
+
+<div>
+            {{ form_start(form) }}
+            <div class="form-group">
+                {{ form_label(form.name) }}
+                {{ form_widget(form.name, {'attr': {'class':'form-control'}})}}
+            </div>
+            <div hidden class="form-group">
+                {{ form_label(form.content) }}
+                {{ form_widget(form.content, {'attr': {'class':'form-control'}})}}
+                
+            </div>
+            <div id="editor" style="border:1px dotted;"></div>
+            <div class="form-group">
+                <button class="btn btn-info mt" onclick="updatePost()">Update</button>
+            </div>
+            
+            {{ form_end(form) }}
+        </div>
+
+
+
 <div hidden id="getPost">{{post.content}}</div>
-<button type="submit">Update</button>
+
 <script>
 
 var post = document.getElementById("getPost");

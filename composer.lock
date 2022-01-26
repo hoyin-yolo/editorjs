@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c15baf05b286b6a72b67c219e884790e",
+    "content-hash": "6d8ad2f90c17127eaf3bbe9d0bf7bd51",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -7976,6 +7976,63 @@
                 }
             ],
             "time": "2021-12-16T21:58:21+00:00"
+        },
+        {
+            "name": "tbmatuka/editorjs-bundle",
+            "version": "v0.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tbmatuka/EditorjsBundle.git",
+                "reference": "bd45f198e8de0708d6448a175493458e3ee3f781"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tbmatuka/EditorjsBundle/zipball/bd45f198e8de0708d6448a175493458e3ee3f781",
+                "reference": "bd45f198e8de0708d6448a175493458e3ee3f781",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=7.2",
+                "symfony/config": "^4.0|^5.0",
+                "symfony/dependency-injection": "^4.0|^5.0",
+                "symfony/form": "^4.0|^5.0",
+                "symfony/framework-bundle": "^4.0|^5.0",
+                "symfony/http-foundation": "^4.0|^5.0",
+                "symfony/http-kernel": "^4.0|^5.0",
+                "symfony/options-resolver": "^4.0|^5.0",
+                "symfony/property-access": "^4.0|^5.0",
+                "symfony/routing": "^4.0|^5.0",
+                "symfony/twig-bundle": "^4.0|^5.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.14",
+                "symfony/framework-bundle": "^4.0",
+                "symfony/phpunit-bridge": "^4.1"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "Tbmatuka\\EditorjsBundle\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tin Benjamin Matuka",
+                    "homepage": "https://tbmatuka.com/"
+                }
+            ],
+            "description": "Symfony bundle for Editor.js",
+            "homepage": "https://github.com/tbmatuka/EditorjsBundle",
+            "support": {
+                "issues": "https://github.com/tbmatuka/EditorjsBundle/issues",
+                "source": "https://github.com/tbmatuka/EditorjsBundle"
+            },
+            "time": "2021-03-14T14:56:50+00:00"
         },
         {
             "name": "twig/extra-bundle",

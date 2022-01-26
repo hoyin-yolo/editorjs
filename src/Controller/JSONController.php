@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class JSONController extends AbstractController
 {
@@ -44,7 +45,19 @@ class JSONController extends AbstractController
     public function edit(Request $request, $id): Response
     {
         $post = $this->getDoctrine()->getRepository(JSONPost::class)->find($id);
+        $form = $this->createForm(JSONType::class, $post);
+        $form->handleRequest($request);
+        
+        if($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($post);
+            $em->flush();
+
+            $this->addFlash('notice', 'Submitted Successfully');
+        }
+
         return $this->render('json/edit.html.twig', [
+            'form' => $form->createView(),
             'post' => $post
         ]);
     }
@@ -77,6 +90,16 @@ class JSONController extends AbstractController
         $form->handleRequest($request);
         
         if($form->isSubmitted() && $form->isValid()) {
+            
+
+            $file = $request->files->get('json')['image'];
+            $uploads_dir = $this->getParameter('uploads_dir');
+            $filename = md5(uniqid()) . '.' . $file->guessExtension();
+            $file->move(
+                $uploads_dir,
+                $filename
+            );
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($post);
             $em->flush();
@@ -87,6 +110,26 @@ class JSONController extends AbstractController
         return $this->render('json/create.html.twig', [
             'form' => $form->createView()
         ]);
+    }
+
+
+
+    /**
+     * @Route("/json/upload", name="jsonupload")
+     */
+    public function upload(Request $request): Response
+    {
+        
+        $file = $request->files->get['image'];
+        $uploads_dir = $this->getParameter('uploads_dir');
+        $filename = md5(uniqid()) . '.' . $file->guessExtension();
+        $file->move(
+            $uploads_dir,
+            $filename
+        );
+        $fileurl = $uploads_dir + $filename;        
+        $response = JsonResponse::fromJsonString('{"success":1, "file": {"url":"$fileurl"}}');
+        return $response;
     }
 
 }
