@@ -7,6 +7,7 @@
 
 <body>
 <div>
+Image Tool: uploading failed because of incorrect response: "array(1) {\n  [\"image\"]=>\n  object(Symfony\\Component\\HttpFoundation\\File\\UploadedFile)#99 (6) {\n    [\"test\":\"Symfony\\Component\\HttpFoundation\\File\\UploadedFile\":private]=>\n    bool(false)\n    [\"originalName\":\"Symfony\\Component\\HttpFoundation\\File\\UploadedFile\":private]=>\n    string(23) \"220201_butameshi_md.png\"\n    [\"mimeType\":\"Symfony\\Component\\HttpFoundation\\File\\UploadedFile\":private]=>\n    string(9) \"image/png\"\n    [\"error\":\"Symfony\\Component\\HttpFoundation\\File\\UploadedFile\":private]=>\n    int(0)\n    [\"pathName\":\"SplFileInfo\":private]=>\n    string(66) \"/private/var/folders/3b/w991drsn60qg714623w1vrtm0000gp/T/phprCFkyX\"\n    [\"fileName\":\"SplFileInfo\":private]=>\n    string(9) \"phprCFkyX\"\n  }\n}\n"
 {% for message in app.flashes('notice') %}
             <div class="alert alert-success">
                 {{message}}
@@ -38,7 +39,6 @@ loadingPosts({{p.id}}, text);
 
 // start conversion
 function loadingPosts(id, body) {
-    
     
 
     // create a div for a post
@@ -81,7 +81,7 @@ function loadingPosts(id, body) {
 
 
     document.getElementById('deleteBtn_' + id).onclick = function () {
-        if (confirm("Press a button!") == true) {
+        if (confirm("削除でよろしいでしょうか") == true) {
             location.href = "/json/delete/" + id;
         } else {
             
@@ -114,7 +114,7 @@ function convertDataToHtml(blocks) {
             convertedHtml += "<hr />";
             break;
           case "image":
-            convertedHtml += `<img class="img-fluid" src="${block.data.file.url}" title="${block.data.caption}" /><br /><em>${block.data.caption}</em>`;
+            convertedHtml += `<img class="img-fluid" src="{{ asset ('${block.data.file.url}') }}" title="${block.data.caption}" /><br /><em>${block.data.caption}</em>`;
             break;
           case "list":
             if (block.data.style == "unordered") {

@@ -119,17 +119,10 @@ class JSONController extends AbstractController
      */
     public function upload(Request $request): Response
     {
-        
-        $file = $request->files->get['image'];
-        $uploads_dir = $this->getParameter('uploads_dir');
-        $filename = md5(uniqid()) . '.' . $file->guessExtension();
-        $file->move(
-            $uploads_dir,
-            $filename
-        );
-        $fileurl = $uploads_dir + $filename;        
-        $response = JsonResponse::fromJsonString('{"success":1, "file": {"url":"$fileurl"}}');
-        return $response;
+        $file = $request->files->all();
+        $x = $file['test'];
+        var_dump($x);
+        die;
     }
 
 }

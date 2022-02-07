@@ -13,6 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/code@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/table@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/embed@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/image@2.3.0"></script>
 
 </head>
 
@@ -43,6 +44,7 @@
 
 <div hidden id="getPost">{{post.content}}</div>
 
+
 <script>
 
 var post = document.getElementById("getPost");
@@ -59,6 +61,7 @@ const editor = new EditorJS({
         quote: Quote,
         code: CodeTool,
         table: Table,
+        image: ImageTool,
 
         embed: {
             class: Embed,
@@ -71,7 +74,8 @@ const editor = new EditorJS({
             }
         }
     },
-    data: text
+    data: text,
+    
 });
 
 

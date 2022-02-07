@@ -1,0 +1,211 @@
+{% extends "CompanyIndexBundle:Company:base.html.twig" %}
+
+{% form_theme form "AgencyBundle:Form:form_div_layout.html.twig" %}
+
+{% block body %}
+    <div class="row m-b-20">
+        <div class="col-sm-12">
+            <h4 class="page-title">ブログ管理</h4>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('company') }}">トップページ</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('company_blog') }}">ブログ管理</a></li>
+                <li class="breadcrumb-item active">登録</li>
+            </ol>
+        </div>
+    </div>
+
+    {{ form_start(form) }}
+
+    <div class="row">
+        <div class="col-12 col-md-6 offset-md-3">
+            <div class="card-box">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            {{ form_label(form.title)   }}
+                            {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.title) }}
+                        </div>
+                    </div>
+
+                    <!-- HIDDEN FIELD-->
+                   <div hidden class="col-sm-12">
+                        <div class="form-group">            
+                            {{ form_widget(form.body, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            {{ form_label(form.body)   }}
+                            <div id="editor" style="border:1px solid;"></div>
+                            <p id="body-error" style="color:red;"></p>                       
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            {{ form_label(form.category)   }}
+                            {{ form_widget(form.category, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.category) }}
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            {{ form_label(form.isPublished)   }}
+                            {{ form_widget(form.isPublished, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.isPublished) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group text-center">
+                <button id="gnavi_parent_input-submit" onClick="passData()" class="btn btn-danger btn-rounded waves-effect waves-light" type="submit">
+                    <span class="btn-label"><i class="fa fa-floppy-o"></i></span>
+                    {{submit_button}}
+                </button>
+                <a href="{{ path('company_blog') }}" class="btn btn-inverse btn-rounded btn-custom waves-effect waves-light m-l-5">
+                    <span class="btn-label"><i class="fa fa-times"></i></span>
+                    キャンセル
+                </a>
+            </div>
+        </div>
+    </div>
+    {{ form_end(form, {'render_rest': false}) }}
+{% endblock body %}
+
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/checklist@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/quote@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/code@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/table@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/embed@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/simple-image@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/image@2.3.0"></script>
+<script>
+
+    // text string to json format 読み込み
+    var text = "";
+    var x = document.getElementById('company_indexbundle_companyblog_body');
+    if (x.innerHTML.length != 0) {
+        var text = JSON.parse(x.innerHTML);
+    };
+    
+
+
+
+    const ImageTool = window.ImageTool;
+
+    const editor = new EditorJS({
+
+        holder: 'editor',
+
+        tools: {
+            header: Header,
+            list: List,
+            checklist: Checklist,
+            quote: Quote,
+            code: CodeTool,
+            table: Table,
+            simpleImage: SimpleImage,
+
+            embed: {
+                class: Embed,
+                inlineToolbar: true,
+                config: {
+                    services: {
+                    youtube: true,
+                    coub: true
+                    }
+                }
+            },
+
+            image: {
+                class: ImageTool,
+                config: {
+                    {#endpoints: {#}
+                    {#    byFile: '{{ path('company_blog_uploadImage') }}', // Controller function -- Your backend file uploader endpoint#}
+                    {#    byUrl: '/uploadImage/', // Controller function -- Your endpoint that provides uploading by Url#}
+                    {#}#}
+                    uploader: {
+                        uploadByFile(file) {
+                            console.log(file)
+                            let formData = new FormData()
+                            formData.append('image', file)
+                            let config = {headers: {'content-type': 'multipart/form-data'}}
+
+                            return $.ajax({
+                                url: '{{ path('company_blog_uploadImage') }}',
+                                type: 'POST',
+                                data: formData,
+                                cache: false,
+                                contentType: false,
+                                processData: false,
+                                dataType: 'json'
+                            }).then(function (result, status, xhr) {
+                                return result;
+                                if (result.code === 'error') {
+                                    return $.Deferred().reject(xhr, result);
+                                }
+                                return $.Deferred().resolve(result);
+                            }).done(function (result) {
+                                return result;
+                            }).fail(function (xhr, result) {
+                                var message = 'エラーが発生しました。<br>再読込を行ってください。';
+                                if (result.message) {
+                                    message = result.message;
+                                }
+                                Swal.fire('Error', message, 'error');
+                            });
+                            {#$.ajax({#}
+                            {#    type: 'post',#}
+                            {#    url: '{{ path('company_blog_uploadImage') }}',#}
+                            {#    data: formData,#}
+                            {#    headers: {'content-type': 'multipart/form-data'},#}
+                            {#    dataType: 'json',#}
+                            {#})#}
+                            {#.then(res => {#}
+                            {#    console.log(res.data);#}
+                            {#})#}
+                            {#;#}
+
+                            {#return me.$axios.post('{{ path('company_blog_uploadImage') }}', formData, config)#}
+                            {#    .then(res => {#}
+                            {#        return res.data#}
+                            {#    })#}
+                        }
+                    }
+                }
+            }     
+        },
+            data: text  
+
+    });
+
+
+    function passData() {
+
+        editor.save().then((outputData) => {
+            if (outputData.blocks.length > 0) {
+                document.getElementById("company_indexbundle_companyblog_body").value = JSON.stringify(outputData);
+            } else {
+                document.getElementById("body-error").innerHTML = "内容は空白です。";
+            }
+        }).catch((error) => {
+            console.log('Failed: ', error)
+        });
+    }
+
+</script>
+{% endblock javascripts %}

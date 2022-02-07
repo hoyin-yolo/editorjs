@@ -4,6 +4,8 @@ namespace App\Controller;
 
 
 use App\Entity\Person;
+use App\Entity\StoreImage;
+use App\Form\ImageType;
 use App\Form\PersonType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -72,6 +74,40 @@ class MainController extends AbstractController
         return $this->render('main/edit.html.twig', [
             "msg" => $msg,
             "tokens" => $tokens,
+        ]);
+    }
+
+
+    /**
+     * @Route("/uploadphoto", name="uploadphoto")
+     */
+    public function uploadphoto(Request $request): Response
+
+    {
+        $post = new StoreImage();
+        $form = $this->createForm(ImageType::class, $post);
+        $form->handleRequest($request);
+        
+        if($form->isSubmitted() && $form->isValid()) {
+            $file = $post->getImage();
+            $uploads_dir = $this->getParameter('uploads_dir');
+            $filename = md5(uniqid()) . '.' . $file->guessExtension();
+            $file->move(
+                $uploads_dir,
+                $filename
+            );
+
+
+            $em = $this->getDoctrine()->getManager();
+            $em->setImage($filename);
+            $em->persist($post);
+            $em->flush();
+
+            $this->addFlash('notice', 'Submitted Successfully');
+        }
+
+        return $this->render('main/uploadphoto.html.twig', [
+            'form' => $form->createView()
         ]);
     }
 
